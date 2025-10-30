@@ -47,6 +47,52 @@ export async function embed(text: string, baseUrl: string, apiKey: string, model
   return data.data[0].embedding;
 }
 
+function extractContactInfo(document: any): string {
+  const contactInfo: string[] = [];
+  
+  // Extract email links
+  const emailLinks = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+  emailLinks.forEach((link: any) => {
+    const email = link.href.replace('mailto:', '');
+    const text = link.textContent?.trim();
+    contactInfo.push(`Email: ${email}${text && text !== email ? ` (${text})` : ''}`);
+  });
+  
+  // Extract phone links
+  const phoneLinks = Array.from(document.querySelectorAll('a[href^="tel:"]'));
+  phoneLinks.forEach((link: any) => {
+    const phone = link.href.replace('tel:', '');
+    const text = link.textContent?.trim();
+    contactInfo.push(`Phone: ${phone}${text && text !== phone ? ` (${text})` : ''}`);
+  });
+  
+  // Extract button text (often contains contact CTAs)
+  const buttons = Array.from(document.querySelectorAll('button, .btn, [role="button"]'));
+  buttons.forEach((btn: any) => {
+    const text = btn.textContent?.trim();
+    if (text && text.length < 100 && (
+      text.toLowerCase().includes('contact') ||
+      text.toLowerCase().includes('call') ||
+      text.toLowerCase().includes('email') ||
+      text.toLowerCase().includes('kapcsolat') ||
+      text.toLowerCase().includes('hívj')
+    )) {
+      contactInfo.push(`Button: ${text}`);
+    }
+  });
+  
+  // Extract footer content (often has contact info)
+  const footers = Array.from(document.querySelectorAll('footer, [role="contentinfo"]'));
+  footers.forEach((footer: any) => {
+    const text = footer.textContent?.trim();
+    if (text && text.length < 500) {
+      contactInfo.push(`Footer info: ${text}`);
+    }
+  });
+  
+  return contactInfo.length > 0 ? '\n\nContact Information:\n' + contactInfo.join('\n') : '';
+}
+
 export async function parseAndEmbed(
   pages: { url: string; html: string }[],
   baseUrl: string,
@@ -57,12 +103,19 @@ export async function parseAndEmbed(
 
   for (const page of pages) {
     const dom = new JSDOM(page.html, { url: page.url });
-    const reader = new Readability(dom.window.document);
+    const document = dom.window.document;
+    const reader = new Readability(document);
     const art = reader.parse();
     
     if (!art || !art.textContent?.trim()) continue;
 
-    const clean = art.textContent.replace(/\s+\n/g, '\n').trim();
+    // Get main content
+    let clean = art.textContent.replace(/\s+\n/g, '\n').trim();
+    
+    // Add extracted contact info
+    const contactInfo = extractContactInfo(document);
+    clean += contactInfo;
+    
     const chunks = chunkText(clean, 1500);
     
     docs.push({ 
