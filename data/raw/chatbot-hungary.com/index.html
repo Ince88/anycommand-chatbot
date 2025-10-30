@@ -543,7 +543,7 @@
     <nav class="nav">
       <div class="logo">
         <span>🤖</span>
-        <span>ChatBot Hungary</span>
+        <span>ChatBot Pro</span>
       </div>
       <ul class="nav-links">
         <li><a href="#funkcionalitasok">Funkciók</a></li>
@@ -665,37 +665,10 @@
   <!-- Demo Section -->
   <section id="demo" class="demo">
     <div class="container">
-      <h2>Próbáld Ki a Saját Weboldaladdal!</h2>
-      <p>Add meg bármelyik weboldal URL-jét, és a chatbot másodpercek alatt megtanulja a tartalmát!</p>
-      
-      <!-- URL Input Form -->
-      <div style="max-width: 600px; margin: 2rem auto;">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-          <input 
-            type="url" 
-            id="website-url" 
-            placeholder="https://pelda.hu" 
-            style="flex: 1; min-width: 300px; padding: 1rem 1.5rem; border-radius: 50px; border: 2px solid white; font-size: 16px; background: rgba(255,255,255,0.95);"
-          />
-          <button 
-            id="test-website-btn" 
-            style="padding: 1rem 2.5rem; border-radius: 50px; border: none; background: white; color: #667eea; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s;"
-            onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.3)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
-          >
-            Teszteld Most! 🚀
-          </button>
-        </div>
-        
-        <!-- Status messages -->
-        <div id="scrape-status" style="margin-top: 1.5rem; padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); display: none;">
-          <div id="scrape-message" style="font-size: 16px; font-weight: 500;"></div>
-          <div id="scrape-progress" style="margin-top: 0.5rem; font-size: 14px; opacity: 0.9;"></div>
-        </div>
-      </div>
-
-      <div class="demo-highlight" style="margin-top: 2rem;">
-        ⚡ Vagy használd az alul jobbra található chatbotot a demo oldalhoz!
+      <h2>Próbáld Ki Élőben!</h2>
+      <p>Nézd meg működés közben a chatbotot. Kattints a lila gombra a jobb alsó sarokban! 👉</p>
+      <div class="demo-highlight">
+        ⚡ Ez egy élő demó - próbáld ki most azonnal!
       </div>
     </div>
   </section>
@@ -802,7 +775,6 @@
 
   <!-- Live Chatbot Widget -->
   <iframe 
-    id="chat-widget-iframe"
     src="https://anycommand-chatbot-production.up.railway.app/widget.html" 
     style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;"
     allow="clipboard-write"
@@ -842,92 +814,6 @@
     document.querySelectorAll('.feature-card, .benefit-item, .pricing-card').forEach(el => {
       observer.observe(el);
     });
-
-    // Custom website testing functionality
-    let currentSessionId = null;
-    const API_URL = window.location.origin;
-
-    document.getElementById('test-website-btn').addEventListener('click', async () => {
-      const urlInput = document.getElementById('website-url');
-      const url = urlInput.value.trim();
-      
-      if (!url) {
-        alert('Kérlek, adj meg egy weboldal URL-t!');
-        return;
-      }
-
-      // Validate URL format
-      try {
-        new URL(url);
-      } catch {
-        alert('Érvénytelen URL formátum. Használj teljes URL-t, például: https://pelda.hu');
-        return;
-      }
-
-      const statusDiv = document.getElementById('scrape-status');
-      const messageDiv = document.getElementById('scrape-message');
-      const progressDiv = document.getElementById('scrape-progress');
-      const button = document.getElementById('test-website-btn');
-
-      // Show loading state
-      statusDiv.style.display = 'block';
-      messageDiv.textContent = '⏳ Feldolgozás folyamatban...';
-      progressDiv.textContent = 'Weboldal letöltése és tartalom elemzése...';
-      button.disabled = true;
-      button.style.opacity = '0.6';
-      button.style.cursor = 'not-allowed';
-
-      try {
-        const response = await fetch(`${API_URL}/custom-scrape`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Hiba történt');
-        }
-
-        // Success!
-        currentSessionId = data.sessionId;
-        messageDiv.textContent = '✅ ' + data.message;
-        progressDiv.innerHTML = `
-          <strong>Betöltött oldalak:</strong><br/>
-          ${data.pages.map(p => `• ${p.title}`).join('<br/>')}
-          <br/><br/>
-          <strong>Most már beszélgethetsz ezzel a tartalommal!</strong><br/>
-          Kattints a lila chat gombra a jobb alsó sarokban! 👉
-        `;
-
-        // Update the widget iframe to use the session
-        updateWidgetSession(currentSessionId);
-
-      } catch (error) {
-        messageDiv.textContent = '❌ Hiba: ' + error.message;
-        progressDiv.textContent = 'Próbáld újra egy másik URL-lel, vagy ellenőrizd, hogy az oldal elérhető-e.';
-      } finally {
-        button.disabled = false;
-        button.style.opacity = '1';
-        button.style.cursor = 'pointer';
-      }
-    });
-
-    // Update widget iframe with session ID
-    function updateWidgetSession(sessionId) {
-      const iframe = document.getElementById('chat-widget-iframe');
-      if (iframe) {
-        // Store sessionId for the widget to use
-        window.chatSessionId = sessionId;
-        
-        // Notify the iframe about the new session
-        iframe.contentWindow.postMessage({ 
-          type: 'SESSION_UPDATE', 
-          sessionId: sessionId 
-        }, '*');
-      }
-    }
   </script>
 
 </body>

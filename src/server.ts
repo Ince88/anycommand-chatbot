@@ -4,10 +4,25 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-
-type Doc = { id: string; url: string; title: string; chunks: string[]; vectors: number[][] };
+import crypto from 'crypto';
+import { scrapeUrl } from './scraper-lib.js';
+import { parseAndEmbed, type Doc } from './ingest-lib.js';
 
 const app = express();
+
+// Session storage for multi-user demos
+const sessions = new Map<string, { docs: Doc[]; createdAt: number }>();
+
+// Cleanup old sessions every 10 minutes (older than 30 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [sessionId, session] of sessions.entries()) {
+    if (now - session.createdAt > 30 * 60 * 1000) {
+      sessions.delete(sessionId);
+      console.log(`Cleaned up session: ${sessionId}`);
+    }
+  }
+}, 10 * 60 * 1000);
 
 // Enable CORS for all origins (restrict in production)
 app.use(cors({
@@ -20,7 +35,12 @@ app.use(express.json({ limit: '1mb' }));
 
 const ChatSchema = z.object({
   message: z.string().min(1),
+  sessionId: z.string().optional(),
   metadata: z.object({ userId: z.string().optional() }).optional()
+});
+
+const ScrapeSchema = z.object({
+  url: z.string().url()
 });
 
 const EMB_PATH = path.join(process.cwd(), 'data', 'embeddings.json');
@@ -64,13 +84,26 @@ function looksHungarian(s: string) {
 
 app.post('/chat', async (req, res) => {
   try {
-    const { message } = ChatSchema.parse(req.body);
+    const { message, sessionId } = ChatSchema.parse(req.body);
+
+    // Use session-specific docs or default DOCS
+    let docsToUse: Doc[] = DOCS;
+    if (sessionId && sessions.has(sessionId)) {
+      docsToUse = sessions.get(sessionId)!.docs;
+    }
+
+    if (docsToUse.length === 0) {
+      return res.json({ 
+        reply: 'Nincs elérhető tartalom. Kérlek, adj meg egy weboldal URL-t a teszteléshez!', 
+        sources: [] 
+      });
+    }
 
     // retrieve
     const qVec = await embed(message);
     type Hit = { score:number; chunk:string; url:string; title:string };
     const hits: Hit[] = [];
-    for (const d of DOCS) {
+    for (const d of docsToUse) {
       d.vectors.forEach((v, idx) => {
         hits.push({ score: cos(qVec, v), chunk: d.chunks[idx], url: d.url, title: d.title });
       });
@@ -111,6 +144,51 @@ ${sources}`
     res.json({ reply, sources: top.map((h,i)=>({ id: `S${i+1}`, title: h.title, url: h.url, score: +h.score.toFixed(3) })) });
   } catch (e:any) {
     res.status(400).json({ error: e.message });
+  }
+});
+
+// Custom scraping endpoint for multi-user demo
+app.post('/custom-scrape', async (req, res) => {
+  try {
+    const { url } = ScrapeSchema.parse(req.body);
+    
+    console.log(`[Custom Scrape] Starting for: ${url}`);
+    
+    // Scrape the URL (limit to 6 pages for demo)
+    const pages = await scrapeUrl(url, 6);
+    
+    if (pages.length === 0) {
+      return res.status(400).json({ error: 'Nem sikerült tartalmat letölteni erről az URL-ről.' });
+    }
+    
+    console.log(`[Custom Scrape] Scraped ${pages.length} pages`);
+    
+    // Parse and embed
+    const docs = await parseAndEmbed(
+      pages,
+      process.env.AI_BASE_URL!,
+      process.env.AI_API_KEY!,
+      process.env.EMBED_MODEL || 'text-embedding-3-small'
+    );
+    
+    if (docs.length === 0) {
+      return res.status(400).json({ error: 'Nem sikerült használható tartalmat kinyerni az oldalból.' });
+    }
+    
+    // Create session
+    const sessionId = crypto.randomUUID();
+    sessions.set(sessionId, { docs, createdAt: Date.now() });
+    
+    console.log(`[Custom Scrape] Created session ${sessionId} with ${docs.length} documents`);
+    
+    res.json({ 
+      sessionId, 
+      message: `Sikeresen betöltve: ${docs.length} oldal, ${docs.reduce((sum, d) => sum + d.chunks.length, 0)} szövegrész.`,
+      pages: docs.map(d => ({ title: d.title, url: d.url }))
+    });
+  } catch (e: any) {
+    console.error('[Custom Scrape] Error:', e);
+    res.status(500).json({ error: e.message || 'Hiba történt a feldolgozás során.' });
   }
 });
 

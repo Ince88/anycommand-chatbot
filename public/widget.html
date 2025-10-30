@@ -384,6 +384,7 @@ class ChatWidget {
     this.messages = [];
     this.isOpen = false;
     this.isLoading = false;
+    this.sessionId = null; // For custom website sessions
     
     this.toggle = document.getElementById('chat-toggle');
     this.container = document.getElementById('chat-container');
@@ -414,6 +415,34 @@ class ChatWidget {
       this.input.style.height = 'auto';
       this.input.style.height = this.input.scrollHeight + 'px';
     });
+
+    // Listen for session updates from parent window
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'SESSION_UPDATE') {
+        this.sessionId = event.data.sessionId;
+        console.log('[ChatWidget] Session updated:', this.sessionId);
+        
+        // Clear chat and show success message
+        const welcome = this.messagesDiv.querySelector('.welcome-message');
+        if (welcome) welcome.remove();
+        
+        this.addSystemMessage('✅ Weboldal betöltve! Most már kérdezhetsz erről a tartalomról.');
+      }
+    });
+  }
+
+  addSystemMessage(text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot-message';
+    messageDiv.style.background = 'linear-gradient(135deg, #667eea22 0%, #764ba222 100%)';
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+    bubble.textContent = text;
+    messageDiv.appendChild(bubble);
+    
+    this.messagesDiv.appendChild(messageDiv);
+    this.scrollToBottom();
   }
   
   toggleChat() {
@@ -447,13 +476,20 @@ class ChatWidget {
     this.sendBtn.disabled = true;
     
     try {
+      const requestBody = { 
+        message,
+        metadata: { timestamp: new Date().toISOString() }
+      };
+      
+      // Include sessionId if available
+      if (this.sessionId) {
+        requestBody.sessionId = this.sessionId;
+      }
+
       const response = await fetch(CONFIG.apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message,
-          metadata: { timestamp: new Date().toISOString() }
-        })
+        body: JSON.stringify(requestBody)
       });
       
       if (!response.ok) {
