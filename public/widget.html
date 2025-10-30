@@ -537,9 +537,9 @@ class ChatWidget {
     if (sources && sources.length > 0) {
       const sourcesDiv = document.createElement('div');
       sourcesDiv.className = 'message-sources';
-      sourcesDiv.innerHTML = '📚 Sources: ' + sources.map(s => 
-        `<a href="${s.url}" target="_blank" rel="noopener">${s.id}</a>`
-      ).join('');
+      sourcesDiv.innerHTML = '📚 Források: ' + sources.map(s => 
+        `<a href="${s.url}" target="_blank" rel="noopener" title="${s.title}">[${s.id}]</a>`
+      ).join(' ');
       messageDiv.appendChild(sourcesDiv);
     }
     
