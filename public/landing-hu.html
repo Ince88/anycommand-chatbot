@@ -890,6 +890,7 @@
       button.style.cursor = 'not-allowed';
 
       try {
+        // Start scraping
         const response = await fetch(`${API_URL}/custom-scrape`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -902,24 +903,53 @@
           throw new Error(data.error || 'Hiba történt');
         }
 
-        // Success!
         currentSessionId = data.sessionId;
-        messageDiv.textContent = '✅ ' + data.message;
-        progressDiv.innerHTML = `
-          <strong>Betöltött oldalak:</strong><br/>
-          ${data.pages.map(p => `• ${p.title}`).join('<br/>')}
-          <br/><br/>
-          <strong>Most már beszélgethetsz ezzel a tartalommal!</strong><br/>
-          Kattints a lila chat gombra a jobb alsó sarokban! 👉
-        `;
+        messageDiv.textContent = '⏳ Feldolgozás folyamatban...';
+        progressDiv.textContent = 'Weboldal letöltése, tartalom elemzése és beágyazás...';
 
-        // Update the widget iframe to use the session
-        updateWidgetSession(currentSessionId);
+        // Poll for completion
+        const pollInterval = setInterval(async () => {
+          try {
+            const statusResponse = await fetch(`${API_URL}/session-status/${currentSessionId}`);
+            const statusData = await statusResponse.json();
+
+            if (statusData.status === 'ready') {
+              clearInterval(pollInterval);
+              
+              // Success!
+              messageDiv.textContent = '✅ ' + statusData.message;
+              progressDiv.innerHTML = `
+                <strong>Betöltött oldalak:</strong><br/>
+                ${statusData.pages.map(p => `• ${p.title}`).join('<br/>')}
+                <br/><br/>
+                <strong>Most már beszélgethetsz ezzel a tartalommal!</strong><br/>
+                Kattints a lila chat gombra a jobb alsó sarokban! 👉
+              `;
+
+              // Update the widget iframe to use the session
+              updateWidgetSession(currentSessionId);
+
+              button.disabled = false;
+              button.style.opacity = '1';
+              button.style.cursor = 'pointer';
+            } else if (statusData.status === 'not_found') {
+              clearInterval(pollInterval);
+              throw new Error('Feldolgozás sikertelen. Próbáld újra!');
+            }
+            // Keep polling if status is 'scraping'
+          } catch (pollError) {
+            clearInterval(pollInterval);
+            messageDiv.textContent = '❌ Hiba: ' + pollError.message;
+            progressDiv.textContent = 'Próbáld újra egy másik URL-lel.';
+            button.disabled = false;
+            button.style.opacity = '1';
+            button.style.cursor = 'pointer';
+          }
+        }, 2000); // Poll every 2 seconds
 
       } catch (error) {
         messageDiv.textContent = '❌ Hiba: ' + error.message;
         progressDiv.textContent = 'Próbáld újra egy másik URL-lel, vagy ellenőrizd, hogy az oldal elérhető-e.';
-      } finally {
         button.disabled = false;
         button.style.opacity = '1';
         button.style.cursor = 'pointer';

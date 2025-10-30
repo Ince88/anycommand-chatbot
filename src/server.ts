@@ -11,7 +11,7 @@ import { parseAndEmbed, type Doc } from './ingest-lib.js';
 const app = express();
 
 // Session storage for multi-user demos
-const sessions = new Map<string, { docs: Doc[]; createdAt: number }>();
+const sessions = new Map<string, { docs: Doc[]; createdAt: number; status: 'scraping' | 'ready' }>();
 
 // Cleanup old sessions every 10 minutes (older than 30 minutes)
 setInterval(() => {
@@ -155,49 +155,86 @@ ${sources}`
   }
 });
 
-// Custom scraping endpoint for multi-user demo
+// Custom scraping endpoint for multi-user demo (async)
 app.post('/custom-scrape', async (req, res) => {
   try {
     const { url } = ScrapeSchema.parse(req.body);
     
     console.log(`[Custom Scrape] Starting for: ${url}`);
     
-    // Scrape the URL (limit to 6 pages for demo)
-    const pages = await scrapeUrl(url, 6);
-    
-    if (pages.length === 0) {
-      return res.status(400).json({ error: 'Nem sikerült tartalmat letölteni erről az URL-ről.' });
-    }
-    
-    console.log(`[Custom Scrape] Scraped ${pages.length} pages`);
-    
-    // Parse and embed
-    const docs = await parseAndEmbed(
-      pages,
-      process.env.AI_BASE_URL!,
-      process.env.AI_API_KEY!,
-      process.env.EMBED_MODEL || 'text-embedding-3-small'
-    );
-    
-    if (docs.length === 0) {
-      return res.status(400).json({ error: 'Nem sikerült használható tartalmat kinyerni az oldalból.' });
-    }
-    
-    // Create session
+    // Create session immediately
     const sessionId = crypto.randomUUID();
-    sessions.set(sessionId, { docs, createdAt: Date.now() });
+    sessions.set(sessionId, { docs: [], createdAt: Date.now(), status: 'scraping' });
     
-    console.log(`[Custom Scrape] Created session ${sessionId} with ${docs.length} documents`);
-    
+    // Return immediately
     res.json({ 
-      sessionId, 
-      message: `Sikeresen betöltve: ${docs.length} oldal, ${docs.reduce((sum, d) => sum + d.chunks.length, 0)} szövegrész.`,
-      pages: docs.map(d => ({ title: d.title, url: d.url }))
+      sessionId,
+      status: 'scraping',
+      message: 'Feldolgozás megkezdve...'
     });
+    
+    // Scrape in background
+    (async () => {
+      try {
+        console.log(`[Session ${sessionId}] Scraping ${url}...`);
+        const pages = await scrapeUrl(url, 6);
+        
+        if (pages.length === 0) {
+          sessions.delete(sessionId);
+          console.log(`[Session ${sessionId}] No pages scraped, session deleted`);
+          return;
+        }
+        
+        console.log(`[Session ${sessionId}] Scraped ${pages.length} pages, embedding...`);
+        
+        const docs = await parseAndEmbed(
+          pages,
+          process.env.AI_BASE_URL!,
+          process.env.AI_API_KEY!,
+          process.env.EMBED_MODEL || 'text-embedding-3-small'
+        );
+        
+        if (docs.length === 0) {
+          sessions.delete(sessionId);
+          console.log(`[Session ${sessionId}] No docs extracted, session deleted`);
+          return;
+        }
+        
+        // Update session with results
+        sessions.set(sessionId, { docs, createdAt: Date.now(), status: 'ready' });
+        console.log(`[Session ${sessionId}] Ready! ${docs.length} documents, ${docs.reduce((sum, d) => sum + d.chunks.length, 0)} chunks`);
+        
+      } catch (e: any) {
+        console.error(`[Session ${sessionId}] Error:`, e);
+        sessions.delete(sessionId);
+      }
+    })();
+    
   } catch (e: any) {
     console.error('[Custom Scrape] Error:', e);
     res.status(500).json({ error: e.message || 'Hiba történt a feldolgozás során.' });
   }
+});
+
+// Check session status
+app.get('/session-status/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+  const session = sessions.get(sessionId);
+  
+  if (!session) {
+    return res.json({ status: 'not_found' });
+  }
+  
+  if (session.status === 'scraping') {
+    return res.json({ status: 'scraping' });
+  }
+  
+  // Ready
+  res.json({ 
+    status: 'ready',
+    message: `Sikeresen betöltve: ${session.docs.length} oldal, ${session.docs.reduce((sum, d) => sum + d.chunks.length, 0)} szövegrész.`,
+    pages: session.docs.map(d => ({ title: d.title, url: d.url }))
+  });
 });
 
 // static site for the chat UI
