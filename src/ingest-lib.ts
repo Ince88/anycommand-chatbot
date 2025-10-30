@@ -93,6 +93,54 @@ function extractContactInfo(document: any): string {
   return contactInfo.length > 0 ? '\n\nContact Information:\n' + contactInfo.join('\n') : '';
 }
 
+function extractPricingInfo(document: any): string {
+  const pricingLines: string[] = [];
+
+  // Common price markers (Hungarian + general)
+  const priceRegex = /(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d+)?)[\s\u00A0]*(Ft|HUF|euró|EUR|usd|USD)/i;
+  const perPeriodRegex = /(\/hó|\/honap|\/hónap|per\s+month|\/mo)/i;
+
+  // Heuristic: scan text of typical pricing sections
+  const selectors = [
+    '[class*="price" i]',
+    '[class*="ar" i]',
+    '[class*="csomag" i]',
+    '[id*="price" i]',
+    '[id*="ar" i]'
+  ];
+
+  const nodes = Array.from(document.querySelectorAll(selectors.join(',')));
+  nodes.forEach((el: any) => {
+    const text = el.textContent?.replace(/[\t\r]+/g, ' ').replace(/[ ]{2,}/g, ' ').trim();
+    if (!text) return;
+    // Break into lines and keep those that look like price lines
+    text.split(/\n+/).forEach((line: string) => {
+      const l = line.trim();
+      if (!l) return;
+      if (priceRegex.test(l) || perPeriodRegex.test(l)) {
+        // Shorten very long lines
+        const clipped = l.length > 180 ? l.slice(0, 177) + '…' : l;
+        pricingLines.push(clipped);
+      }
+    });
+  });
+
+  // Also scan all links/buttons that may include prices
+  const ctas = Array.from(document.querySelectorAll('a, button'));
+  ctas.forEach((el: any) => {
+    const t = el.textContent?.trim();
+    if (t && (priceRegex.test(t) || perPeriodRegex.test(t))) {
+      pricingLines.push(t);
+    }
+  });
+
+  // De-duplicate while preserving order
+  const seen = new Set<string>();
+  const unique = pricingLines.filter(l => (seen.has(l) ? false : (seen.add(l), true)));
+
+  return unique.length > 0 ? '\n\nPricing Information:\n' + unique.join('\n') : '';
+}
+
 export async function parseAndEmbed(
   pages: { url: string; html: string }[],
   baseUrl: string,
@@ -112,9 +160,9 @@ export async function parseAndEmbed(
     // Get main content
     let clean = art.textContent.replace(/\s+\n/g, '\n').trim();
     
-    // Add extracted contact info
-    const contactInfo = extractContactInfo(document);
-    clean += contactInfo;
+    // Add extracted contact & pricing info
+    clean += extractContactInfo(document);
+    clean += extractPricingInfo(document);
     
     const chunks = chunkText(clean, 1500);
     
