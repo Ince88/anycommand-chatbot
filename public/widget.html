@@ -418,13 +418,18 @@ class ChatWidget {
 
     // Listen for session updates from parent window
     window.addEventListener('message', (event) => {
-      if (event.data.type === 'SESSION_UPDATE') {
+      if (event.data && event.data.type === 'SESSION_UPDATE') {
         this.sessionId = event.data.sessionId;
         console.log('[ChatWidget] Session updated:', this.sessionId);
+        console.log('[ChatWidget] Will use sessionId in next request');
         
         // Clear chat and show success message
         const welcome = this.messagesDiv.querySelector('.welcome-message');
         if (welcome) welcome.remove();
+        
+        // Clear any existing messages
+        const existingMessages = this.messagesDiv.querySelectorAll('.message, .error-message');
+        existingMessages.forEach(msg => msg.remove());
         
         this.addSystemMessage('✅ Weboldal betöltve! Most már kérdezhetsz erről a tartalomról.');
       }
@@ -484,6 +489,9 @@ class ChatWidget {
       // Include sessionId if available
       if (this.sessionId) {
         requestBody.sessionId = this.sessionId;
+        console.log('[ChatWidget] Sending request WITH sessionId:', this.sessionId);
+      } else {
+        console.log('[ChatWidget] Sending request WITHOUT sessionId (using default content)');
       }
 
       const response = await fetch(CONFIG.apiUrl, {

@@ -24,7 +24,7 @@ export function extractLinks(html: string, base: string, sameHostOnly = true): s
   return abs
     .filter(u => !sameHostOnly || u.host === baseHost)
     .map(u => u.toString().replace(/#.*$/, ''))
-    .filter(u => !u.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico)$/i));
+    .filter(u => !u.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico|css|js|woff|woff2|ttf|eot)$/i));
 }
 
 export async function scrapeUrl(startUrl: string, maxPages = 10): Promise<{ url: string; html: string }[]> {

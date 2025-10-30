@@ -918,6 +918,8 @@
     function updateWidgetSession(sessionId) {
       const iframe = document.getElementById('chat-widget-iframe');
       if (iframe) {
+        console.log('[Landing] Sending sessionId to widget:', sessionId);
+        
         // Store sessionId for the widget to use
         window.chatSessionId = sessionId;
         
@@ -926,6 +928,14 @@
           type: 'SESSION_UPDATE', 
           sessionId: sessionId 
         }, '*');
+        
+        // Also try updating the iframe src with the session
+        setTimeout(() => {
+          iframe.contentWindow.postMessage({ 
+            type: 'SESSION_UPDATE', 
+            sessionId: sessionId 
+          }, '*');
+        }, 500);
       }
     }
   </script>

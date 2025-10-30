@@ -88,8 +88,16 @@ app.post('/chat', async (req, res) => {
 
     // Use session-specific docs or default DOCS
     let docsToUse: Doc[] = DOCS;
-    if (sessionId && sessions.has(sessionId)) {
-      docsToUse = sessions.get(sessionId)!.docs;
+    if (sessionId) {
+      console.log(`[Chat] Request with sessionId: ${sessionId}`);
+      if (sessions.has(sessionId)) {
+        docsToUse = sessions.get(sessionId)!.docs;
+        console.log(`[Chat] Using session docs: ${docsToUse.length} documents, ${docsToUse.reduce((sum, d) => sum + d.chunks.length, 0)} chunks`);
+      } else {
+        console.log(`[Chat] Session ${sessionId} not found! Using default docs.`);
+      }
+    } else {
+      console.log(`[Chat] No sessionId provided, using default docs`);
     }
 
     if (docsToUse.length === 0) {
