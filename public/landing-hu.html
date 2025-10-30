@@ -760,10 +760,9 @@
   <section id="kapcsolat" class="cta-section">
     <div class="container">
       <h2>Készen Állsz az Indulásra?</h2>
-      <p>Csatlakozz több száz elégedett ügyfélhez, akik már használják a ChatBot Pro-t!</p>
+      
       <div class="hero-buttons">
-        <a href="mailto:info@chatbotpro.hu" class="btn-primary">Email: info@chatbotpro.hu</a>
-        <a href="tel:+36301234567" class="btn-secondary">📞 +36 30 123 4567</a>
+        <a href="mailto:info@chatbot-hungary.com" class="btn-primary">Email: info@chatbot-hungary.com</a>
       </div>
     </div>
   </section>
@@ -790,9 +789,7 @@
       </div>
       <div class="footer-section">
         <h4>Kapcsolat</h4>
-        <p>📧 info@chatbotpro.hu</p>
-        <p>📞 +36 30 123 4567</p>
-        <p>📍 1052 Budapest, Váci utca 1.</p>
+        <p>📧 info@chatbot-hungary.com</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -801,22 +798,16 @@
   </footer>
 
   <!-- Live Chatbot Widget -->
-  <script>
-    // Dynamically set widget URL based on environment
-    const widgetUrl = window.location.hostname === 'localhost' 
-      ? `${window.location.origin}/widget.html`
-      : 'https://anycommand-chatbot-production.up.railway.app/widget.html';
-    
-    document.write(`
-      <iframe 
-        id="chat-widget-iframe"
-        src="${widgetUrl}" 
-        style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;"
-        allow="clipboard-write"
-        title="ChatBot Demo"
-      ></iframe>
-    `);
-  </script>
+  <div style="position:fixed;bottom:20px;right:20px;width:420px;height:650px;max-height:calc(100vh - 40px);z-index:9999;">
+    <iframe 
+      src="https://anycommand-chatbot-production.up.railway.app/widget.html" 
+      width="100%" 
+      height="100%"
+      style="border:none;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.2);"
+      allow="clipboard-write"
+      title="ChatBot Demo"
+    ></iframe>
+  </div>
 
   <!-- Smooth Scroll -->
   <script>
@@ -851,135 +842,6 @@
     document.querySelectorAll('.feature-card, .benefit-item, .pricing-card').forEach(el => {
       observer.observe(el);
     });
-
-    // Custom website testing functionality
-    let currentSessionId = null;
-    // Use Railway API URL for production, or current origin for local dev
-    const API_URL = window.location.hostname === 'localhost' 
-      ? window.location.origin 
-      : 'https://anycommand-chatbot-production.up.railway.app';
-
-    document.getElementById('test-website-btn').addEventListener('click', async () => {
-      const urlInput = document.getElementById('website-url');
-      const url = urlInput.value.trim();
-      
-      if (!url) {
-        alert('Kérlek, adj meg egy weboldal URL-t!');
-        return;
-      }
-
-      // Validate URL format
-      try {
-        new URL(url);
-      } catch {
-        alert('Érvénytelen URL formátum. Használj teljes URL-t, például: https://pelda.hu');
-        return;
-      }
-
-      const statusDiv = document.getElementById('scrape-status');
-      const messageDiv = document.getElementById('scrape-message');
-      const progressDiv = document.getElementById('scrape-progress');
-      const button = document.getElementById('test-website-btn');
-
-      // Show loading state
-      statusDiv.style.display = 'block';
-      messageDiv.textContent = '⏳ Feldolgozás folyamatban...';
-      progressDiv.textContent = 'Weboldal letöltése és tartalom elemzése...';
-      button.disabled = true;
-      button.style.opacity = '0.6';
-      button.style.cursor = 'not-allowed';
-
-      try {
-        // Start scraping
-        const response = await fetch(`${API_URL}/custom-scrape`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Hiba történt');
-        }
-
-        currentSessionId = data.sessionId;
-        messageDiv.textContent = '⏳ Feldolgozás folyamatban...';
-        progressDiv.textContent = 'Weboldal letöltése, tartalom elemzése és beágyazás...';
-
-        // Poll for completion
-        const pollInterval = setInterval(async () => {
-          try {
-            const statusResponse = await fetch(`${API_URL}/session-status/${currentSessionId}`);
-            const statusData = await statusResponse.json();
-
-            if (statusData.status === 'ready') {
-              clearInterval(pollInterval);
-              
-              // Success!
-              messageDiv.textContent = '✅ ' + statusData.message;
-              progressDiv.innerHTML = `
-                <strong>Betöltött oldalak:</strong><br/>
-                ${statusData.pages.map(p => `• ${p.title}`).join('<br/>')}
-                <br/><br/>
-                <strong>Most már beszélgethetsz ezzel a tartalommal!</strong><br/>
-                Kattints a lila chat gombra a jobb alsó sarokban! 👉
-              `;
-
-              // Update the widget iframe to use the session
-              updateWidgetSession(currentSessionId);
-
-              button.disabled = false;
-              button.style.opacity = '1';
-              button.style.cursor = 'pointer';
-            } else if (statusData.status === 'not_found') {
-              clearInterval(pollInterval);
-              throw new Error('Feldolgozás sikertelen. Próbáld újra!');
-            }
-            // Keep polling if status is 'scraping'
-          } catch (pollError) {
-            clearInterval(pollInterval);
-            messageDiv.textContent = '❌ Hiba: ' + pollError.message;
-            progressDiv.textContent = 'Próbáld újra egy másik URL-lel.';
-            button.disabled = false;
-            button.style.opacity = '1';
-            button.style.cursor = 'pointer';
-          }
-        }, 2000); // Poll every 2 seconds
-
-      } catch (error) {
-        messageDiv.textContent = '❌ Hiba: ' + error.message;
-        progressDiv.textContent = 'Próbáld újra egy másik URL-lel, vagy ellenőrizd, hogy az oldal elérhető-e.';
-        button.disabled = false;
-        button.style.opacity = '1';
-        button.style.cursor = 'pointer';
-      }
-    });
-
-    // Update widget iframe with session ID
-    function updateWidgetSession(sessionId) {
-      const iframe = document.getElementById('chat-widget-iframe');
-      if (iframe) {
-        console.log('[Landing] Sending sessionId to widget:', sessionId);
-        
-        // Store sessionId for the widget to use
-        window.chatSessionId = sessionId;
-        
-        // Notify the iframe about the new session
-        iframe.contentWindow.postMessage({ 
-          type: 'SESSION_UPDATE', 
-          sessionId: sessionId 
-        }, '*');
-        
-        // Also try updating the iframe src with the session
-        setTimeout(() => {
-          iframe.contentWindow.postMessage({ 
-            type: 'SESSION_UPDATE', 
-            sessionId: sessionId 
-          }, '*');
-        }, 500);
-      }
-    }
   </script>
 
 </body>
