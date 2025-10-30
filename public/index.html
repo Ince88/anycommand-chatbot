@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Website Chat Test — anycommand.io</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#f6f7f9;margin:0}
+  .wrap{max-width:760px;margin:40px auto;background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+  .row{display:flex;gap:10px;margin:10px 0}
+  .b{padding:10px 14px;border-radius:12px}
+  .u{margin-left:auto;background:#e8f0ff}
+  .a{margin-right:auto;background:#f2f2f2;white-space:pre-wrap}
+  .src{font-size:12px;color:#666;margin-top:6px}
+  .input{display:flex;gap:8px;margin-top:12px}
+  input,button{padding:10px 12px;border-radius:10px;border:1px solid #ddd}
+  button{cursor:pointer}
+</style>
+<div class="wrap">
+  <h2>Chat over <code>anycommand.io</code></h2>
+  <div id="log"></div>
+  <div class="input">
+    <input id="q" placeholder="Ask about AnyCommand…"/>
+    <button id="go">Send</button>
+  </div>
+</div>
+<script>
+  const log = document.getElementById('log');
+  function add(txt, who='a') {
+    const row = document.createElement('div'); row.className='row';
+    const b = document.createElement('div'); b.className='b '+(who==='u'?'u':'a'); b.textContent = txt;
+    row.appendChild(b); log.appendChild(row); row.scrollIntoView();
+  }
+  async function ask() {
+    const q = document.getElementById('q'); const v = q.value.trim(); if(!v) return;
+    add(v,'u'); q.value='';
+    const r = await fetch('/chat',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: v }) });
+    const j = await r.json();
+    add(j.reply || j.error || 'Error');
+    if (j.sources) {
+      const s = document.createElement('div'); s.className='src';
+      s.textContent = 'Sources: ' + j.sources.map(s=>`${s.id}:${s.title}`).join(' | ');
+      log.appendChild(s);
+    }
+  }
+  document.getElementById('go').onclick = ask;
+  document.getElementById('q').addEventListener('keydown', e => { if (e.key==='Enter') ask(); });
+</script>
+
