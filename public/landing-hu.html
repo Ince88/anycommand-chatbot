@@ -801,13 +801,22 @@
   </footer>
 
   <!-- Live Chatbot Widget -->
-  <iframe 
-    id="chat-widget-iframe"
-    src="https://anycommand-chatbot-production.up.railway.app/widget.html" 
-    style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;"
-    allow="clipboard-write"
-    title="ChatBot Demo"
-  ></iframe>
+  <script>
+    // Dynamically set widget URL based on environment
+    const widgetUrl = window.location.hostname === 'localhost' 
+      ? `${window.location.origin}/widget.html`
+      : 'https://anycommand-chatbot-production.up.railway.app/widget.html';
+    
+    document.write(`
+      <iframe 
+        id="chat-widget-iframe"
+        src="${widgetUrl}" 
+        style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;"
+        allow="clipboard-write"
+        title="ChatBot Demo"
+      ></iframe>
+    `);
+  </script>
 
   <!-- Smooth Scroll -->
   <script>
@@ -845,7 +854,10 @@
 
     // Custom website testing functionality
     let currentSessionId = null;
-    const API_URL = window.location.origin;
+    // Use Railway API URL for production, or current origin for local dev
+    const API_URL = window.location.hostname === 'localhost' 
+      ? window.location.origin 
+      : 'https://anycommand-chatbot-production.up.railway.app';
 
     document.getElementById('test-website-btn').addEventListener('click', async () => {
       const urlInput = document.getElementById('website-url');
