@@ -25,10 +25,12 @@ setInterval(() => {
 }, 10 * 60 * 1000);
 
 // Enable CORS for all origins (restrict in production)
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',');
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  methods: ['GET', 'POST'],
-  credentials: true
+  origin: allowedOrigins || true, // true = reflect request origin
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '1mb' }));
