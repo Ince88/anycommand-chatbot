@@ -24,28 +24,12 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000);
 
-// Enable CORS for all origins (restrict in production)
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',');
+// Enable CORS for all origins - simple approach
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or Postman)
-    if (!origin) return callback(null, true);
-    
-    // If we have a whitelist, check it
-    if (allowedOrigins) {
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    } else {
-      // No whitelist = allow all origins
-      callback(null, true);
-    }
-  },
+  origin: '*', // Allow all origins
   methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false // Must be false when using '*'
 }));
 
 app.use(express.json({ limit: '1mb' }));
