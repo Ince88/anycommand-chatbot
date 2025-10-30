@@ -180,7 +180,7 @@ app.post('/custom-scrape', async (req, res) => {
     (async () => {
       try {
         console.log(`[Session ${sessionId}] Scraping ${url}...`);
-        const pages = await scrapeUrl(url, 6);
+        const pages = await scrapeUrl(url, 20);
         
         if (pages.length === 0) {
           sessions.delete(sessionId);

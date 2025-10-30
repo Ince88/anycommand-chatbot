@@ -27,7 +27,7 @@ export function extractLinks(html: string, base: string, sameHostOnly = true): s
     .filter(u => !u.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico|css|js|woff|woff2|ttf|eot)(\?|$)/i));
 }
 
-export async function scrapeUrl(startUrl: string, maxPages = 10): Promise<{ url: string; html: string }[]> {
+export async function scrapeUrl(startUrl: string, maxPages = 20): Promise<{ url: string; html: string }[]> {
   const queue = [startUrl];
   const seen = new Set<string>();
   const results: { url: string; html: string }[] = [];
@@ -54,14 +54,13 @@ export async function scrapeUrl(startUrl: string, maxPages = 10): Promise<{ url:
       
       results.push({ url, html });
       console.log(`[Scraper] Added page ${results.length}: ${url}`);
-      
-      // Only scrape links from the first page for demo purposes (faster)
-      if (results.length === 1) {
-        const next = extractLinks(html, url);
-        console.log(`[Scraper] Found ${next.length} links, queuing first 5`);
-        for (const n of next.slice(0, 5)) { // Limit to 5 subpages
-          if (!seen.has(n)) queue.push(n);
-        }
+
+      // Always enqueue links (breadth-first), but throttle per page
+      const next = extractLinks(html, url);
+      console.log(`[Scraper] Found ${next.length} links`);
+      for (const n of next.slice(0, 20)) { // throttle fan-out per page
+        if (seen.size + queue.length >= maxPages) break;
+        if (!seen.has(n)) queue.push(n);
       }
     } catch (e: any) {
       console.warn(`[Scraper] Skip ${url}: ${e.message}`);
