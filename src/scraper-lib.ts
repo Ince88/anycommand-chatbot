@@ -24,7 +24,7 @@ export function extractLinks(html: string, base: string, sameHostOnly = true): s
   return abs
     .filter(u => !sameHostOnly || u.host === baseHost)
     .map(u => u.toString().replace(/#.*$/, ''))
-    .filter(u => !u.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico|css|js|woff|woff2|ttf|eot)$/i));
+    .filter(u => !u.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico|css|js|woff|woff2|ttf|eot)(\?|$)/i));
 }
 
 export async function scrapeUrl(startUrl: string, maxPages = 10): Promise<{ url: string; html: string }[]> {
@@ -37,22 +37,38 @@ export async function scrapeUrl(startUrl: string, maxPages = 10): Promise<{ url:
     if (seen.has(url)) continue;
     seen.add(url);
     
+    // Skip non-HTML files
+    if (url.match(/\.(pdf|png|jpe?g|gif|svg|zip|mp4|mp3|webp|ico|css|js|woff|woff2|ttf|eot)(\?|$)/i)) {
+      console.log(`[Scraper] Skipping non-HTML: ${url}`);
+      continue;
+    }
+    
     try {
       const html = await fetchHtml(url);
+      
+      // Verify it's actually HTML content
+      if (!html.trim().toLowerCase().startsWith('<!doctype') && !html.trim().toLowerCase().startsWith('<html')) {
+        console.log(`[Scraper] Skipping non-HTML content: ${url}`);
+        continue;
+      }
+      
       results.push({ url, html });
+      console.log(`[Scraper] Added page ${results.length}: ${url}`);
       
       // Only scrape links from the first page for demo purposes (faster)
       if (results.length === 1) {
         const next = extractLinks(html, url);
+        console.log(`[Scraper] Found ${next.length} links, queuing first 5`);
         for (const n of next.slice(0, 5)) { // Limit to 5 subpages
           if (!seen.has(n)) queue.push(n);
         }
       }
     } catch (e: any) {
-      console.warn(`Skip ${url}: ${e.message}`);
+      console.warn(`[Scraper] Skip ${url}: ${e.message}`);
     }
   }
   
+  console.log(`[Scraper] Completed: ${results.length} pages scraped`);
   return results;
 }
 
