@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professzionális AI chatbot megoldások vállalkozásoknak. Automatizáld az ügyfélszolgálatot, növeld az eladásokat!">
+  <meta name="keywords" content="chatbot, AI, ügyfélszolgálat, automatizálás, mesterséges intelligencia">
+  <title>ChatBot Pro - AI Chatbot Megoldások Vállalkozásoknak</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+      --text: #333;
+      --text-light: #666;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1rem 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo span {
+      font-size: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.8;
+    }
+
+    .cta-button {
+      background: white;
+      color: var(--primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 120px 2rem 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.3s;
+      display: inline-block;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      color: var(--primary);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 80px 2rem;
+      background: var(--light);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 40px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .section-title p {
+      font-size: 18px;
+      color: var(--text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .feature-card h3 {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    /* Benefits Section */
+    .benefits {
+      padding: 80px 2rem;
+      background: white;
+    }
+
+    .benefits-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .benefits-list {
+      list-style: none;
+    }
+
+    .benefit-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .benefit-icon {
+      font-size: 24px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .benefit-text h4 {
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .benefit-text p {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .benefits-visual {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .benefits-visual::before {
+      content: '💬';
+      font-size: 200px;
+      position: absolute;
+      opacity: 0.1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .benefits-visual h3 {
+      font-size: 64px;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .benefits-visual p {
+      font-size: 24px;
+      opacity: 0.95;
+      position: relative;
+    }
+
+    /* Demo Section */
+    .demo {
+      padding: 80px 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .demo h2 {
+      font-size: 40px;
+      margin-bottom: 1rem;
+    }
+
+    .demo p {
+      font-size: 20px;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .demo-highlight {
+      background: rgba(255,255,255,0.2);
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      display: inline-block;
+      backdrop-filter: blur(10px);
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* Pricing Section */
+    .pricing {
+      padding: 80px 2rem;
+      background: var(--light);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .pricing-card.featured {
+      border: 3px solid var(--primary);
+    }
+
+    .pricing-badge {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .pricing-card h3 {
+      font-size: 28px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .price {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .price-period {
+      color: var(--text-light);
+      font-size: 16px;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .pricing-features li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 80px 2rem;
+      background: var(--dark);
+      color: white;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-size: 40px;
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      font-size: 20px;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    /* Footer */
+    .footer {
+      background: #0f0f1a;
+      color: white;
+      padding: 3rem 2rem 2rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+      margin-bottom: 1rem;
+      font-size: 18px;
+    }
+
+    .footer-section p,
+    .footer-section a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .benefits-content {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title h2 {
+        font-size: 32px;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.8s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <div class="logo">
+        <span>🤖</span>
+        <span>ChatBot Pro</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#funkcionalitasok">Funkciók</a></li>
+        <li><a href="#eloenyok">Előnyök</a></li>
+        <li><a href="#arak">Árak</a></li>
+        <li><a href="#demo">Demó</a></li>
+      </ul>
+      <a href="#kapcsolat" class="cta-button">Kapcsolat</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content animate-in">
+      <h1>Automatizáld az Ügyfélszolgálatot AI Chatbottal</h1>
+      <p>Növeld az eladásokat, csökkentsd a költségeket és nyújts 24/7 támogatást vállalkozásod számára modern mesterséges intelligenciával.</p>
+      <div class="hero-buttons">
+        <a href="#demo" class="btn-primary">Próbáld ki most 👉</a>
+        <a href="#arak" class="btn-secondary">Árak megtekintése</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="funkcionalitasok" class="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Miért válassz minket?</h2>
+        <p>Modern AI technológiával felszerelt chatbotok, amelyek valóban értik az ügyfeleket</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>Mesterséges Intelligencia</h3>
+          <p>GPT-4 alapú AI, amely természetes nyelven válaszol, és valóban megérti a kérdéseket.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3>Magyar Nyelv Támogatás</h3>
+          <p>Tökéletes magyar nyelvű kommunikáció, akcentusok és nyelvtani szabályok ismeretével.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Azonnali Válaszok</h3>
+          <p>Másodpercek alatt válaszol az ügyfelek kérdéseire, 24 órában, 7 napon át.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Egyedi Tudásbázis</h3>
+          <p>A chatbot a TE weboldalad tartalmát tanulja meg és azt használja válaszadásra.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Testreszabható Design</h3>
+          <p>Teljesen személyre szabható megjelenés, illeszkedik a márkád arculatához.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Részletes Statisztikák</h3>
+          <p>Lásd pontosan, mit kérdeznek az ügyfelek, és hogyan használják a chatbotot.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section id="eloenyok" class="benefits">
+    <div class="container">
+      <div class="section-title">
+        <h2>Konkrét Előnyök a Vállalkozásod Számára</h2>
+        <p>Nem csak egy chatbot, hanem egy teljes ügyfélszolgálati megoldás</p>
+      </div>
+      <div class="benefits-content">
+        <ul class="benefits-list">
+          <li class="benefit-item">
+            <span class="benefit-icon">💰</span>
+            <div class="benefit-text">
+              <h4>70% Költségcsökkentés</h4>
+              <p>Csökkentsd az ügyfélszolgálati költségeket automatizálással, miközben jobb szolgáltatást nyújtasz.</p>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon">⏰</span>
+            <div class="benefit-text">
+              <h4>24/7 Elérhetőség</h4>
+              <p>A chatbot soha nem alszik. Ügyfeleid bármikor kaphatnak választ, hétvégén és éjszaka is.</p>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon">📈</span>
+            <div class="benefit-text">
+              <h4>Több Eladás</h4>
+              <p>Azonnali válaszokkal növeld a konverziós rátát és csökkentsd a lemorzsolódást.</p>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon">😊</span>
+            <div class="benefit-text">
+              <h4>Elégedettebb Ügyfelek</h4>
+              <p>Gyors, pontos válaszok nélküled. Az ügyfelek nem várnak, azonnal segítséget kapnak.</p>
+            </div>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon">🚀</span>
+            <div class="benefit-text">
+              <h4>5 Perc Alatt Működik</h4>
+              <p>Egyszerű integráció, nincs szükség programozói tudásra. Egy sorral beilleszthető a weboldalba.</p>
+            </div>
+          </li>
+        </ul>
+        <div class="benefits-visual">
+          <h3>90%</h3>
+          <p>ügyfélelégedettség növekedés már az első hónapban</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Section -->
+  <section id="demo" class="demo">
+    <div class="container">
+      <h2>Próbáld Ki Élőben!</h2>
+      <p>Nézd meg működés közben a chatbotot. Kattints a lila gombra a jobb alsó sarokban! 👉</p>
+      <div class="demo-highlight">
+        ⚡ Ez egy élő demó - próbáld ki most azonnal!
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="arak" class="pricing">
+    <div class="container">
+      <div class="section-title">
+        <h2>Válassz Csomagot</h2>
+        <p>Átlátható árazás, rejtett költségek nélkül</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Kezdő</h3>
+          <div class="price">19 990 Ft</div>
+          <div class="price-period">/hó</div>
+          <ul class="pricing-features">
+            <li>1000 üzenet/hó</li>
+            <li>1 weboldal</li>
+            <li>Magyar nyelv</li>
+            <li>Alap statisztikák</li>
+            <li>Email támogatás</li>
+          </ul>
+          <a href="#kapcsolat" class="btn-primary">Kezdés</a>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="pricing-badge">🔥 Legnépszerűbb</div>
+          <h3>Professzionális</h3>
+          <div class="price">49 990 Ft</div>
+          <div class="price-period">/hó</div>
+          <ul class="pricing-features">
+            <li>5000 üzenet/hó</li>
+            <li>3 weboldal</li>
+            <li>Magyar + Angol nyelv</li>
+            <li>Részletes analitika</li>
+            <li>Testreszabható design</li>
+            <li>Prioritás támogatás</li>
+          </ul>
+          <a href="#kapcsolat" class="btn-primary">Kezdés</a>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Vállalati</h3>
+          <div class="price">Egyedi</div>
+          <div class="price-period">árajánlat</div>
+          <ul class="pricing-features">
+            <li>Korlátlan üzenet</li>
+            <li>Korlátlan weboldal</li>
+            <li>Minden nyelv</li>
+            <li>Dedikált support</li>
+            <li>Egyedi fejlesztések</li>
+            <li>SLA garancia</li>
+          </ul>
+          <a href="#kapcsolat" class="btn-primary">Kapcsolat</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="kapcsolat" class="cta-section">
+    <div class="container">
+      <h2>Készen Állsz az Indulásra?</h2>
+      <p>Csatlakozz több száz elégedett ügyfélhez, akik már használják a ChatBot Pro-t!</p>
+      <div class="hero-buttons">
+        <a href="mailto:info@chatbotpro.hu" class="btn-primary">Email: info@chatbotpro.hu</a>
+        <a href="tel:+36301234567" class="btn-secondary">📞 +36 30 123 4567</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>🤖 ChatBot Pro</h4>
+        <p>Modern AI chatbot megoldások magyar vállalkozásoknak. Növeld az eladásokat, csökkentsd a költségeket.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Gyors linkek</h4>
+        <a href="#funkcionalitasok">Funkciók</a>
+        <a href="#eloenyok">Előnyök</a>
+        <a href="#arak">Árak</a>
+        <a href="#demo">Demó</a>
+      </div>
+      <div class="footer-section">
+        <h4>Jogi</h4>
+        <a href="#">Általános Szerződési Feltételek</a>
+        <a href="#">Adatvédelmi Nyilatkozat</a>
+        <a href="#">Cookie Szabályzat</a>
+      </div>
+      <div class="footer-section">
+        <h4>Kapcsolat</h4>
+        <p>📧 info@chatbotpro.hu</p>
+        <p>📞 +36 30 123 4567</p>
+        <p>📍 1052 Budapest, Váci utca 1.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 ChatBot Pro. Minden jog fenntartva. Made with ❤️ in Hungary</p>
+    </div>
+  </footer>
+
+  <!-- Live Chatbot Widget -->
+  <div style="position:fixed;bottom:20px;right:20px;width:420px;height:650px;max-height:calc(100vh - 40px);z-index:9999;">
+    <iframe 
+      src="https://anycommand-chatbot-production.up.railway.app/widget.html" 
+      width="100%" 
+      height="100%"
+      style="border:none;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.2);"
+      allow="clipboard-write"
+      title="ChatBot Demo"
+    ></iframe>
+  </div>
+
+  <!-- Smooth Scroll -->
+  <script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Add animation on scroll
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-card, .benefit-item, .pricing-card').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
+
