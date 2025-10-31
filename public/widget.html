@@ -434,6 +434,16 @@ class ChatWidget {
         this.addSystemMessage('✅ Weboldal betöltve! Most már kérdezhetsz erről a tartalomról.');
       }
     });
+    
+    // Send initial state to parent
+    if (window.parent && window.parent !== window) {
+      setTimeout(() => {
+        window.parent.postMessage({
+          type: 'CHAT_STATE',
+          isOpen: this.isOpen
+        }, '*');
+      }, 100);
+    }
   }
 
   addSystemMessage(text) {
@@ -454,6 +464,14 @@ class ChatWidget {
     this.isOpen = !this.isOpen;
     this.container.classList.toggle('open', this.isOpen);
     this.toggle.classList.toggle('open', this.isOpen);
+    
+    // Notify parent window about chat state
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'CHAT_STATE',
+        isOpen: this.isOpen
+      }, '*');
+    }
     
     if (this.isOpen) {
       this.input.focus();

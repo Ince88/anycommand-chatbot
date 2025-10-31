@@ -869,42 +869,80 @@
       : 'https://anycommand-chatbot-production.up.railway.app/widget.html';
     
     document.write(`
-      <iframe 
-        id="chat-widget-iframe"
-        src="${widgetUrl}" 
-        style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;pointer-events:auto;touch-action:auto;"
-        allow="clipboard-write"
-        title="ChatBot Demo"
-      ></iframe>
+      <div id="chat-widget-wrapper" style="position:fixed;bottom:0;right:0;z-index:9999;pointer-events:none;">
+        <iframe 
+          id="chat-widget-iframe"
+          src="${widgetUrl}" 
+          style="border:none;background:transparent;pointer-events:auto;display:block;"
+          allow="clipboard-write"
+          title="ChatBot Demo"
+        ></iframe>
+      </div>
       <style>
-        @media (max-width: 768px) {
-          #chat-widget-iframe {
-            width: 100vw !important;
-            height: 100vh !important;
-            max-height: 100vh !important;
-            bottom: 0 !important;
-            right: 0 !important;
-          }
+        /* Desktop sizing */
+        #chat-widget-wrapper {
+          width: 420px;
+          height: 670px;
+          max-height: 100vh;
         }
         
-        /* Prevent iframe from blocking touches when chat is closed */
         #chat-widget-iframe {
-          pointer-events: auto;
+          width: 420px;
+          height: 670px;
+          max-height: 100vh;
         }
         
-        /* Ensure page content is accessible on mobile */
+        /* Mobile: smaller initial size, full screen when open */
         @media (max-width: 768px) {
-          body {
-            touch-action: pan-y;
+          #chat-widget-wrapper {
+            width: 80px;
+            height: 80px;
+            pointer-events: auto;
           }
           
-          /* Make sure form inputs and buttons work */
-          input, textarea, button, select {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
+          #chat-widget-iframe {
+            width: 80px;
+            height: 80px;
+          }
+          
+          /* When chat is open, make it full screen */
+          #chat-widget-wrapper.chat-open {
+            width: 100vw !important;
+            height: 100vh !important;
+          }
+          
+          #chat-widget-wrapper.chat-open #chat-widget-iframe {
+            width: 100vw !important;
+            height: 100vh !important;
           }
         }
+        
+        /* Ensure page content is always accessible */
+        body {
+          touch-action: pan-y;
+        }
+        
+        input, textarea, button, select, a {
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+          position: relative;
+          z-index: 1;
+        }
       </style>
+      
+      <script>
+        // Listen for messages from the widget to know when it's open/closed
+        window.addEventListener('message', function(event) {
+          const wrapper = document.getElementById('chat-widget-wrapper');
+          if (event.data && event.data.type === 'CHAT_STATE') {
+            if (event.data.isOpen) {
+              wrapper.classList.add('chat-open');
+            } else {
+              wrapper.classList.remove('chat-open');
+            }
+          }
+        });
+      </script>
     `);
   </script>
 
