@@ -500,13 +500,6 @@
       color: rgba(255,255,255,0.5);
     }
 
-    /* Mobile touch fixes */
-    button, .btn-primary, .btn-secondary, .cta-button, a {
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
-      cursor: pointer;
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
       .nav-links {
@@ -531,14 +524,6 @@
 
       .pricing-grid {
         grid-template-columns: 1fr;
-      }
-
-      /* Ensure buttons are clickable on mobile */
-      button, input[type="submit"], .btn-primary, .btn-secondary {
-        min-height: 44px;
-        min-width: 44px;
-        -webkit-tap-highlight-color: rgba(102, 126, 234, 0.5);
-        touch-action: manipulation;
       }
     }
 
@@ -869,81 +854,38 @@
       : 'https://anycommand-chatbot-production.up.railway.app/widget.html';
     
     document.write(`
-      <div id="chat-widget-wrapper" style="position:fixed;bottom:0;right:0;z-index:9999;pointer-events:none;">
-        <iframe 
-          id="chat-widget-iframe"
-          src="${widgetUrl}" 
-          style="border:none;background:transparent;pointer-events:auto;display:block;"
-          allow="clipboard-write"
-          title="ChatBot Demo"
-        ></iframe>
-      </div>
-      <style>
-        /* Desktop sizing */
-        #chat-widget-wrapper {
-          width: 420px;
-          height: 670px;
-          max-height: 100vh;
-        }
-        
-        #chat-widget-iframe {
-          width: 420px;
-          height: 670px;
-          max-height: 100vh;
-        }
-        
-        /* Mobile: smaller initial size, full screen when open */
-        @media (max-width: 768px) {
-          #chat-widget-wrapper {
-            width: 80px;
-            height: 80px;
-            pointer-events: auto;
-          }
-          
-          #chat-widget-iframe {
-            width: 80px;
-            height: 80px;
-          }
-          
-          /* When chat is open, make it full screen */
-          #chat-widget-wrapper.chat-open {
-            width: 100vw !important;
-            height: 100vh !important;
-          }
-          
-          #chat-widget-wrapper.chat-open #chat-widget-iframe {
-            width: 100vw !important;
-            height: 100vh !important;
-          }
-        }
-        
-        /* Ensure page content is always accessible */
-        body {
-          touch-action: pan-y;
-        }
-        
-        input, textarea, button, select, a {
-          touch-action: manipulation;
-          -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
-          position: relative;
-          z-index: 1;
-        }
-      </style>
-      
-      <script>
-        // Listen for messages from the widget to know when it's open/closed
-        window.addEventListener('message', function(event) {
-          const wrapper = document.getElementById('chat-widget-wrapper');
-          if (event.data && event.data.type === 'CHAT_STATE') {
-            if (event.data.isOpen) {
-              wrapper.classList.add('chat-open');
-            } else {
-              wrapper.classList.remove('chat-open');
-            }
-          }
-        });
-      </script>
+      <iframe 
+        id="chat-widget-iframe"
+        src="${widgetUrl}" 
+        style="position:fixed;bottom:20px;right:20px;width:80px;height:80px;border:none;z-index:9999;background:transparent;pointer-events:none;"
+        allow="clipboard-write"
+        title="ChatBot Demo"
+      ></iframe>
     `);
+    
+    // Allow clicks only on the iframe itself
+    const iframe = document.getElementById('chat-widget-iframe');
+    if (iframe) {
+      iframe.addEventListener('mouseenter', () => {
+        iframe.style.pointerEvents = 'auto';
+      });
+      
+      // Expand iframe when chat opens
+      window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'CHAT_TOGGLE') {
+          if (event.data.isOpen) {
+            iframe.style.width = '420px';
+            iframe.style.height = '670px';
+            iframe.style.maxHeight = 'calc(100vh - 40px)';
+            iframe.style.pointerEvents = 'auto';
+          } else {
+            iframe.style.width = '80px';
+            iframe.style.height = '80px';
+            iframe.style.pointerEvents = 'none';
+          }
+        }
+      });
+    }
   </script>
 
   <!-- Smooth Scroll -->
