@@ -700,57 +700,84 @@
     </div>
   </section>
 
-  <!-- Pricing Section -->
+  <!-- Contact Section -->
   <section id="arak" class="pricing">
     <div class="container">
       <div class="section-title">
-        <h2>Válassz Csomagot</h2>
-        <p>Átlátható árazás, rejtett költségek nélkül</p>
+        <h2>Lépj Kapcsolatba Velünk</h2>
+        <p>Kérj egyedi árajánlatot vállalkozásod igényeihez szabva!</p>
       </div>
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3>Kezdő</h3>
-          <div class="price">19 990 Ft</div>
-          <div class="price-period">/hó</div>
-          <ul class="pricing-features">
-            <li>1000 üzenet/hó</li>
-            <li>1 weboldal</li>
-            <li>Magyar nyelv</li>
-            <li>Alap statisztikák</li>
-            <li>Email támogatás</li>
-          </ul>
-          <a href="#kapcsolat" class="btn-primary">Kezdés</a>
-        </div>
-
-        <div class="pricing-card featured">
-          <div class="pricing-badge">🔥 Legnépszerűbb</div>
-          <h3>Professzionális</h3>
-          <div class="price">49 990 Ft</div>
-          <div class="price-period">/hó</div>
-          <ul class="pricing-features">
-            <li>5000 üzenet/hó</li>
-            <li>3 weboldal</li>
-            <li>Magyar + Angol nyelv</li>
-            <li>Részletes analitika</li>
-            <li>Testreszabható design</li>
-            <li>Prioritás támogatás</li>
-          </ul>
-          <a href="#kapcsolat" class="btn-primary">Kezdés</a>
-        </div>
-
-        <div class="pricing-card">
-          <h3>Vállalati</h3>
-          <div class="price">Egyedi</div>
-          <div class="price-period">árajánlat</div>
-          <ul class="pricing-features">
-            <li>Korlátlan üzenet</li>
-            <li>Korlátlan weboldal</li>
-            <li>Minden nyelv</li>
-            <li>Dedikált support</li>
-            <li>Egyedi fejlesztések</li>
-            <li>SLA garancia</li>
-          </ul>
-          <a href="#kapcsolat" class="btn-primary">Kapcsolat</a>
+      
+      <div style="max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+        <form id="contact-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div>
+            <label for="contact-name" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Név *</label>
+            <input 
+              type="text" 
+              id="contact-name" 
+              name="name" 
+              required 
+              style="width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: border-color 0.3s;"
+              onfocus="this.style.borderColor='var(--primary)'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            />
+          </div>
+          
+          <div>
+            <label for="contact-email" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Email cím *</label>
+            <input 
+              type="email" 
+              id="contact-email" 
+              name="email" 
+              required 
+              style="width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: border-color 0.3s;"
+              onfocus="this.style.borderColor='var(--primary)'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            />
+          </div>
+          
+          <div>
+            <label for="contact-company" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Cégnév</label>
+            <input 
+              type="text" 
+              id="contact-company" 
+              name="company" 
+              style="width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: border-color 0.3s;"
+              onfocus="this.style.borderColor='var(--primary)'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            />
+          </div>
+          
+          <div>
+            <label for="contact-message" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Üzenet / Árajánlat kérés *</label>
+            <textarea 
+              id="contact-message" 
+              name="message" 
+              rows="5" 
+              required 
+              placeholder="Írj pár sort arról, miben segíthetünk..."
+              style="width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; resize: vertical; transition: border-color 0.3s; font-family: inherit;"
+              onfocus="this.style.borderColor='var(--primary)'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            ></textarea>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="btn-primary" 
+            style="width: 100%; margin-top: 1rem; cursor: pointer; border: none;"
+          >
+            Árajánlat Kérése 📨
+          </button>
+        </form>
+        
+        <div id="form-status" style="margin-top: 1.5rem; padding: 1rem; border-radius: 12px; display: none;"></div>
+        
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #f0f0f0; text-align: center;">
+          <p style="color: var(--text-light); margin-bottom: 0.5rem;">Vagy írj nekünk közvetlenül:</p>
+          <a href="mailto:info@chatbot-hungary.com" style="color: var(--primary); font-weight: 600; font-size: 18px; text-decoration: none;">
+            📧 info@chatbot-hungary.com
+          </a>
         </div>
       </div>
     </div>
@@ -847,6 +874,43 @@
 
     document.querySelectorAll('.feature-card, .benefit-item, .pricing-card').forEach(el => {
       observer.observe(el);
+    });
+
+    // Contact form handling
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        name: document.getElementById('contact-name').value,
+        email: document.getElementById('contact-email').value,
+        company: document.getElementById('contact-company').value,
+        message: document.getElementById('contact-message').value
+      };
+      
+      // Create mailto link with form data
+      const subject = encodeURIComponent('Árajánlat kérés - ChatBot Hungary');
+      const body = encodeURIComponent(
+        `Név: ${formData.name}\n` +
+        `Email: ${formData.email}\n` +
+        `Cégnév: ${formData.company || 'Nem adta meg'}\n\n` +
+        `Üzenet:\n${formData.message}`
+      );
+      
+      // Open email client
+      window.location.href = `mailto:info@chatbot-hungary.com?subject=${subject}&body=${body}`;
+      
+      // Show success message
+      const statusDiv = document.getElementById('form-status');
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'linear-gradient(135deg, #667eea22 0%, #764ba222 100%)';
+      statusDiv.style.color = 'var(--dark)';
+      statusDiv.innerHTML = '✅ Email alkalmazásod megnyílt! Ha nem, írj nekünk közvetlenül: info@chatbot-hungary.com';
+      
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        this.reset();
+        statusDiv.style.display = 'none';
+      }, 5000);
     });
 
     // Custom website testing functionality
