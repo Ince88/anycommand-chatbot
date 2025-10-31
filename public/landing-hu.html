@@ -743,6 +743,19 @@
           </div>
           
           <div>
+            <label for="contact-phone" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Telefonszám</label>
+            <input 
+              type="tel" 
+              id="contact-phone" 
+              name="phone" 
+              placeholder="+36 30 123 4567"
+              style="width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: border-color 0.3s;"
+              onfocus="this.style.borderColor='var(--primary)'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            />
+          </div>
+          
+          <div>
             <label for="contact-company" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Cégnév</label>
             <input 
               type="text" 
@@ -905,6 +918,7 @@
       const formData = {
         name: document.getElementById('contact-name').value,
         email: document.getElementById('contact-email').value,
+        phone: document.getElementById('contact-phone').value || 'Nem adta meg',
         company: document.getElementById('contact-company').value || 'Nem adta meg',
         message: document.getElementById('contact-message').value
       };
