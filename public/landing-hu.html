@@ -500,6 +500,13 @@
       color: rgba(255,255,255,0.5);
     }
 
+    /* Mobile touch fixes */
+    button, .btn-primary, .btn-secondary, .cta-button, a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+      cursor: pointer;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .nav-links {
@@ -524,6 +531,14 @@
 
       .pricing-grid {
         grid-template-columns: 1fr;
+      }
+
+      /* Ensure buttons are clickable on mobile */
+      button, input[type="submit"], .btn-primary, .btn-secondary {
+        min-height: 44px;
+        min-width: 44px;
+        -webkit-tap-highlight-color: rgba(102, 126, 234, 0.5);
+        touch-action: manipulation;
       }
     }
 
@@ -857,10 +872,39 @@
       <iframe 
         id="chat-widget-iframe"
         src="${widgetUrl}" 
-        style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;pointer-events:auto;"
+        style="position:fixed;bottom:0;right:0;width:420px;height:100vh;max-height:670px;border:none;z-index:9999;background:transparent;pointer-events:auto;touch-action:auto;"
         allow="clipboard-write"
         title="ChatBot Demo"
       ></iframe>
+      <style>
+        @media (max-width: 768px) {
+          #chat-widget-iframe {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            bottom: 0 !important;
+            right: 0 !important;
+          }
+        }
+        
+        /* Prevent iframe from blocking touches when chat is closed */
+        #chat-widget-iframe {
+          pointer-events: auto;
+        }
+        
+        /* Ensure page content is accessible on mobile */
+        @media (max-width: 768px) {
+          body {
+            touch-action: pan-y;
+          }
+          
+          /* Make sure form inputs and buttons work */
+          input, textarea, button, select {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+        }
+      </style>
     `);
   </script>
 
