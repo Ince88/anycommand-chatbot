@@ -47,8 +47,9 @@
       margin: 0 auto;
       padding: 0 2rem;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
+      gap: 2rem;
     }
 
     .logo {
@@ -57,6 +58,12 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .logo img {
+      height: 50px;
+      width: auto;
+      display: block;
     }
 
     .logo span {
@@ -541,10 +548,6 @@
   <!-- Header -->
   <header class="header">
     <nav class="nav">
-      <div class="logo">
-        <span>🤖</span>
-        <span>ChatBot Hungary</span>
-      </div>
       <ul class="nav-links">
         <li><a href="#funkcionalitasok">Funkciók</a></li>
         <li><a href="#eloenyok">Előnyök</a></li>
@@ -558,6 +561,9 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content animate-in">
+      <div style="width: 150px; height: 150px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <img src="chatboticon.png" alt="ChatBot Hungary" style="height: 100px; width: auto;">
+      </div>
       <h1>Automatizáld az Ügyfélszolgálatot AI Chatbottal</h1>
       <p>Növeld az eladásokat, csökkentsd a költségeket és nyújts 24/7 támogatást vállalkozásod számára modern mesterséges intelligenciával.</p>
       <div class="hero-buttons">
@@ -798,7 +804,9 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
-        <h4>🤖 ChatBot Pro</h4>
+        <div style="margin-bottom: 1rem;">
+          <img src="chatboticon.png" alt="ChatBot Hungary" style="height: 40px; width: auto;">
+        </div>
         <p>Modern AI chatbot megoldások magyar vállalkozásoknak. Növeld az eladásokat, csökkentsd a költségeket.</p>
       </div>
       <div class="footer-section">
@@ -847,13 +855,16 @@
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+        const href = this.getAttribute('href');
+        if (href && href !== '#') {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         }
       });
     });
@@ -876,41 +887,55 @@
       observer.observe(el);
     });
 
-    // Contact form handling
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+    // Contact form handling with Formspree
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+      
+      const statusDiv = document.getElementById('form-status');
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      // Show loading
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Küldés folyamatban... ⏳';
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'linear-gradient(135deg, #667eea22 0%, #764ba222 100%)';
+      statusDiv.style.color = 'var(--dark)';
+      statusDiv.innerHTML = '⏳ Üzenet küldése...';
       
       const formData = {
         name: document.getElementById('contact-name').value,
         email: document.getElementById('contact-email').value,
-        company: document.getElementById('contact-company').value,
+        company: document.getElementById('contact-company').value || 'Nem adta meg',
         message: document.getElementById('contact-message').value
       };
       
-      // Create mailto link with form data
-      const subject = encodeURIComponent('Árajánlat kérés - ChatBot Hungary');
-      const body = encodeURIComponent(
-        `Név: ${formData.name}\n` +
-        `Email: ${formData.email}\n` +
-        `Cégnév: ${formData.company || 'Nem adta meg'}\n\n` +
-        `Üzenet:\n${formData.message}`
-      );
-      
-      // Open email client
-      window.location.href = `mailto:info@chatbot-hungary.com?subject=${subject}&body=${body}`;
-      
-      // Show success message
-      const statusDiv = document.getElementById('form-status');
-      statusDiv.style.display = 'block';
-      statusDiv.style.background = 'linear-gradient(135deg, #667eea22 0%, #764ba222 100%)';
-      statusDiv.style.color = 'var(--dark)';
-      statusDiv.innerHTML = '✅ Email alkalmazásod megnyílt! Ha nem, írj nekünk közvetlenül: info@chatbot-hungary.com';
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        this.reset();
-        statusDiv.style.display = 'none';
-      }, 5000);
+      try {
+        const response = await fetch('https://formspree.io/f/xldopglq', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          statusDiv.style.background = 'linear-gradient(135deg, #10b98122 0%, #0ea47222 100%)';
+          statusDiv.innerHTML = '✅ Köszönjük! Üzeneted sikeresen elküldve. Hamarosan jelentkezünk!';
+          this.reset();
+          
+          setTimeout(() => {
+            statusDiv.style.display = 'none';
+          }, 5000);
+        } else {
+          throw new Error('Küldési hiba');
+        }
+      } catch (error) {
+        statusDiv.style.background = 'linear-gradient(135deg, #ff6b6b22 0%, #ee5a5222 100%)';
+        statusDiv.innerHTML = '❌ Hiba történt. Kérlek, írj nekünk közvetlenül: <a href="mailto:info@chatbot-hungary.com" style="color: var(--primary); font-weight: 600;">info@chatbot-hungary.com</a>';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Árajánlat Kérése 📨';
+      }
     });
 
     // Custom website testing functionality

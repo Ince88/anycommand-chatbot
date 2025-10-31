@@ -124,15 +124,18 @@ app.post('/chat', async (req, res) => {
     const sources = top.map((h,i)=>`[S${i+1}] ${h.title} — ${h.url}`).join('\n');
 
     const hu = looksHungarian(message);
-    const fallbackHu = 'Ha a válasz nincs a megadott kontextusban, írd: "Nem szerepel a megadott forrásokban. A ChatBot Hungary csapata tanítani fogja a chatbotot, hogy a jövőben a lehető legjobb választ adja."';
-    const fallbackEn = 'If the answer is not in the provided context, say: "This is not present in the provided sources. The ChatBot Hungary team will teach the bot to provide the best possible answer in the future."';
+    const fallbackHu = 'Ha a válasz nincs a megadott forrásokban, udvariasan mondd el, hogy ez az információ jelenleg nem áll rendelkezésedre, de szívesen segítesz más kérdésekben.';
+    const fallbackEn = 'If the answer is not in the provided sources, politely say that this information is not currently available, but you are happy to help with other questions.';
     const system = {
       role: 'system' as const,
       content: [
-        'You are a concise support bot that answers ONLY using the provided context.',
+        'You are a helpful customer support representative speaking on behalf of the company.',
+        'Answer questions using ONLY the provided context from the company website.',
+        'Speak in first-person plural (we, our, us) as a company representative.',
+        'Be warm, professional, and helpful.',
         hu ? fallbackHu : fallbackEn,
         'Cite sources inline as [S1], [S2] etc. matching the provided Source list.',
-        hu ? 'Respond in Hungarian.' : 'Respond in the user language (default English).'
+        hu ? 'Válaszolj magyarul.' : 'Respond in the user language (default English).'
       ].join(' ')
     };
 
