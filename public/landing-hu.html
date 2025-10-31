@@ -857,31 +857,28 @@
       <iframe 
         id="chat-widget-iframe"
         src="${widgetUrl}" 
-        style="position:fixed;bottom:20px;right:20px;width:80px;height:80px;border:none;z-index:9999;background:transparent;pointer-events:none;"
+        style="position:fixed;bottom:0;right:0;width:100px;height:100px;border:none;z-index:9999;background:transparent;pointer-events:auto;"
         allow="clipboard-write"
         title="ChatBot Demo"
       ></iframe>
     `);
     
-    // Allow clicks only on the iframe itself
+    // Expand iframe when chat opens
     const iframe = document.getElementById('chat-widget-iframe');
     if (iframe) {
-      iframe.addEventListener('mouseenter', () => {
-        iframe.style.pointerEvents = 'auto';
-      });
-      
-      // Expand iframe when chat opens
       window.addEventListener('message', (event) => {
         if (event.data && event.data.type === 'CHAT_TOGGLE') {
           if (event.data.isOpen) {
             iframe.style.width = '420px';
             iframe.style.height = '670px';
-            iframe.style.maxHeight = 'calc(100vh - 40px)';
-            iframe.style.pointerEvents = 'auto';
+            iframe.style.maxHeight = 'calc(100vh - 20px)';
+            iframe.style.bottom = '0';
+            iframe.style.right = '0';
           } else {
-            iframe.style.width = '80px';
-            iframe.style.height = '80px';
-            iframe.style.pointerEvents = 'none';
+            iframe.style.width = '100px';
+            iframe.style.height = '100px';
+            iframe.style.bottom = '0';
+            iframe.style.right = '0';
           }
         }
       });
