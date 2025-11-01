@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Download Any Command to remotely operate your Windows PC using your Android device. Easy setup with just three steps for seamless connectivity.">
+  <link rel="icon" href="/chatbottabicon.png" type="image/png">
+  <title>Any Command: Control Your PC from Android Phone</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --secondary: #1e40af;
+      --accent: #3b82f6;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --text: #334155;
+      --text-light: #64748b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    .header {
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .cta-button {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .cta-button:hover {
+      background: var(--secondary);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 120px 2rem 80px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--light) 0%, #e0f2fe 100%);
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 1rem 2.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 80px 2rem;
+      background: white;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 40px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .section-title p {
+      font-size: 18px;
+      color: var(--text-light);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 24px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: 80px 2rem;
+      background: var(--light);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .step {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 auto 1.5rem;
+    }
+
+    .step h3 {
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .step p {
+      color: var(--text-light);
+    }
+
+    /* Download Section */
+    .download {
+      padding: 80px 2rem;
+      background: white;
+      text-align: center;
+    }
+
+    .download-buttons {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .download-btn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem 2.5rem;
+      background: var(--dark);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: transform 0.3s;
+    }
+
+    .download-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .download-btn svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--dark);
+      color: white;
+      padding: 3rem 2rem 2rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+      margin-bottom: 1rem;
+      font-size: 18px;
+    }
+
+    .footer-section p,
+    .footer-section a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .section-title h2 {
+        font-size: 32px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.8s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <div class="logo">Any Command</div>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#download">Download</a></li>
+      </ul>
+      <a href="#download" class="cta-button">Get Started</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content animate-in">
+      <h1>Control Your PC from Your Android Phone</h1>
+      <p>Remotely operate your Windows PC using your Android device. Easy setup with just three steps for seamless connectivity.</p>
+      <div class="hero-buttons">
+        <a href="#download" class="btn-primary">Download Now</a>
+        <a href="#how-it-works" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Powerful Remote Control Features</h2>
+        <p>Everything you need to control your PC from anywhere</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🖱️</div>
+          <h3>Full Mouse Control</h3>
+          <p>Control your PC's mouse cursor with precise touch gestures on your Android device.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <h3>Keyboard Input</h3>
+          <p>Type on your PC using your phone's keyboard for seamless text input.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎮</div>
+          <h3>Media Controls</h3>
+          <p>Control media playback, volume, and more directly from your phone.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Touch Gestures</h3>
+          <p>Use intuitive touch gestures for clicking, scrolling, and navigation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Connection</h3>
+          <p>All communication is encrypted for secure remote access.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Low Latency</h3>
+          <p>Experience minimal delay for responsive real-time control.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-title">
+        <h2>Get Started in 3 Easy Steps</h2>
+        <p>Set up remote access in minutes</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Download the Apps</h3>
+          <p>Install the Windows desktop app on your PC and the Android app on your phone.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Connect Devices</h3>
+          <p>Connect both devices to the same Wi-Fi network or use the pairing code.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Start Controlling</h3>
+          <p>Open the app on your phone and start controlling your PC remotely!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section id="download" class="download">
+    <div class="container">
+      <div class="section-title">
+        <h2>Download Any Command</h2>
+        <p>Available for Windows and Android</p>
+      </div>
+      <div class="download-buttons">
+        <a href="#" class="download-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm2 4v-2H3a2 2 0 0 0 2 2zM3 9h2V7H3v2zm12 12h2v-2h-2v2zm4-18H9a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 12H9V5h10v10zm-8 6h2v-2h-2v2zm-4 0h2v-2H7v2z"/>
+          </svg>
+          <div>
+            <div style="font-size: 12px; opacity: 0.8;">Download for</div>
+            <div style="font-size: 18px;">Windows</div>
+          </div>
+        </a>
+        <a href="#" class="download-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85a.637.637 0 0 0-.83.22l-1.88 3.24a11.46 11.46 0 0 0-8.94 0L5.65 5.67a.643.643 0 0 0-.87-.2c-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 2.5 0 1.25 1.25 0 0 1-2.5 0zm7.5 0a1.25 1.25 0 1 1 2.5 0 1.25 1.25 0 0 1-2.5 0z"/>
+          </svg>
+          <div>
+            <div style="font-size: 12px; opacity: 0.8;">Download for</div>
+            <div style="font-size: 18px;">Android</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Any Command</h4>
+        <p>Control your PC from your Android phone with ease. Secure, fast, and reliable remote access solution.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#download">Download</a>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <a href="#">Documentation</a>
+        <a href="#">FAQ</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Any Command. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Smooth Scroll -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href && href !== '#') {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    });
+
+    // Add animation on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.feature-card, .step').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
+
